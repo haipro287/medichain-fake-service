@@ -1,0 +1,1 @@
+fakeservice for demo 3rd party's implemented function
