@@ -1,0 +1,12 @@
+replicaCount: 1
+revisionHistoryLimit: 1
+image:
+  repository: kroniak/ssh-client
+  tag: latest
+  pullPolicy: Always
+startupProbe:
+  enable: true
+livenessProbe:
+  enable: true
+service:
+  name: ssh-tunnel

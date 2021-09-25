@@ -1,0 +1,20 @@
+replicaSet:
+  enabled: true
+# useStatefulSet: true
+service:
+  type: LoadBalancer
+replicaCount: 3
+auth:
+  enabled: true
+  rootPassword: root_${MONGODB_PASS}
+  username: ${MONGODB_USER}
+  password: ${MONGODB_PASS}
+  database: ${MONGODB_DATABASE}
+  replicaSetKey: abcd1234
+# arbiter: 
+#   enabled: false
+
+# persistence:
+#   enabled: true
+#   accessMode: ReadWriteOnce
+#   size: 1000Mi

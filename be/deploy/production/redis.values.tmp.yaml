@@ -1,0 +1,23 @@
+volumePermissions:
+  enabled: true
+auth:
+  enabled: false
+master:
+  podSecurityContext:
+    enabled: true
+    fsGroup: 2000
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1000
+  persistence:
+    size: 500Mi
+replica:
+  replicaCount: 1
+  podSecurityContext:
+    enabled: true
+    fsGroup: 2000
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1000
+  persistence:
+    size: 500Mi

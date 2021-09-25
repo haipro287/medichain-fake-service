@@ -1,0 +1,20 @@
+replicaCount: 1
+revisionHistoryLimit: 1
+image:
+  repository: supermedicalchain/fake-service-nginx
+  tag: ${TAG}
+  pullPolicy: Always
+  resources:
+    requests:
+      cpu: 200m
+      memory: 300Mi
+startupProbe:
+  failureThreshold:
+  periodSeconds:
+livenessProbe:
+  failureThreshold: 1
+  periodSeconds: 10
+service:
+  name: fake-service-nginx
+services:
+  apiURL: ${API_URL}

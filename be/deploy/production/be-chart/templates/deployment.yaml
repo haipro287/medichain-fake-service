@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.service.name }}-deployment
+  labels:
+    chart: {{ .Values.service.name }}
+
+spec:
+  replicas: {{ .Values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: "{{ .Values.service.name }}-selector"
+  template:
+    metadata:
+      labels:
+        app: "{{ .Values.service.name }}-selector"
+    spec:
+      containers:
+      - name: {{ .Values.service.name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        resources:
+          requests:
+            cpu: {{ .Values.image.resources.requests.cpu }}
+            memory: {{ .Values.image.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.image.resources.limits.cpu }}
+            memory: {{ .Values.image.resources.limits.memory }}
+        command: ["npm", "run", "start"]
+        ports:
+          - containerPort: 80
+            name: "{{ .Values.service.name | initials }}-port"
+        env:
+          - name: PORT
+            value : "80"
+          - name: PROJECT_NAME
+            value: "{{ .Release.Name }}"
+          - name: API_PREFIX
+            value: {{ .Values.services.apiPrefix | default "" | quote }}
+          - name: TOKEN_SECRET
+            value: {{ .Values.services.tokenSecret | default "/" | quote }}
+          - name: SERVICE_CODE
+            value: {{ .Values.services.serviceCode | default "/" | quote }}
+          - name: GATEWAY_URL
+            value: {{ .Values.services.gatewayURL | default "/" | quote }}

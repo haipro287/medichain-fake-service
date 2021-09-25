@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    chart: nginx
+spec:
+  replicas: {{ .Values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: "nginx-selector"
+  template:
+    metadata:
+      labels:
+        app: "nginx-selector"
+    spec:
+      containers:
+      - name: nginx
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - containerPort: 80
+            name: "nginx-port"
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+      - name: dnsmasq
+        image: "janeczku/go-dnsmasq:release-1.0.7"
+        args:
+          - --listen
+          - "127.0.0.1:53"
+          - --default-resolver
+          - -search
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: nginx-config
