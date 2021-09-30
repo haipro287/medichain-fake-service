@@ -1,0 +1,39 @@
+trigger:
+  branches:
+    include:
+      - main
+      - dev
+      - releases/*
+  paths:
+    include:
+      - fe
+  batch: true
+
+name: $(SourceBranchName)_$(Date:ddMMyyyy)$(Rev:.r)
+jobs:
+  - job: Build
+    displayName: Build FE
+    pool:
+      name: Builder
+    steps:
+      - checkout: self
+      - task: CmdLine@2
+        displayName: Prebuild
+        inputs:
+          script: |
+            docker build -t supermedicalchain/fake-service-nginx:pre-release --target=release .
+          workingDirectory: $(System.DefaultWorkingDirectory)/fe
+      - task: CmdLine@2
+        displayName: Build
+        inputs:
+          script: |
+            docker login -u $(DOCKER_USERNAME) -p $(DOCKER_PASSWORD)
+            docker tag supermedicalchain/fake-service-nginx:pre-release supermedicalchain/fake-service-nginx:${TAG}
+            docker push supermedicalchain/fake-service-nginx:${TAG}
+          workingDirectory: $(System.DefaultWorkingDirectory)/fe
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifact: deploy'
+        inputs:
+          PathtoPublish: $(System.DefaultWorkingDirectory)/fe/deploy
+          ArtifactName: deploy
+...

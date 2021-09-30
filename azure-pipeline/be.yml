@@ -1,0 +1,39 @@
+trigger:
+  branches:
+    include:
+      - main
+      - dev
+      - releases/*
+  paths:
+    include:
+      - be
+  batch: true
+name: $(SourceBranchName)_$(Date:ddMMyyyy)$(Rev:.r)
+
+jobs:
+- job: Build
+  displayName: Build BE image
+  pool:
+    name: Builder
+  steps:
+  - checkout: self
+  - task: CmdLine@2
+    displayName: Prebuild
+    inputs:
+      script: >
+        docker build -t supermedicalchain/fake-service-backend:pre-release .
+      workingDirectory: $(System.DefaultWorkingDirectory)/be
+  - task: CmdLine@2
+    displayName: Build
+    inputs:
+      script: |
+        docker login -u $(DOCKER_USERNAME) -p $(DOCKER_PASSWORD)
+        docker tag supermedicalchain/fake-service-backend:pre-release supermedicalchain/fake-service-backend:${TAG}
+        docker push supermedicalchain/fake-service-backend:${TAG}
+      workingDirectory: $(System.DefaultWorkingDirectory)/be
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: server'
+    inputs:
+      PathtoPublish: $(System.DefaultWorkingDirectory)/be/deploy
+      ArtifactName: server
+...
