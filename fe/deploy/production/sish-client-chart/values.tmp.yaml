@@ -5,11 +5,11 @@ image:
   tag: latest
   pullPolicy: Always
 startupProbe:
-  enable: true
+  enable: false
   failureThreshold:
   periodSeconds:
 livenessProbe:
-  enable: true
+  enable: false
   failureThreshold: 1
   periodSeconds: 10
 service:
